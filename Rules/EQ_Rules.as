@@ -1,7 +1,7 @@
 
-#include "Factory.as"
+#include "EQ_Factory.as"
 #include "EQ_Commands.as"
-#include "Class_common.as"
+#include "EQ_Class_common.as"
 
 
 
@@ -15,17 +15,17 @@ namespace EQ {
   void Load_menu_text() {
     // Material Menu Text:
     for( u8 i = 0 ; i != EQ::Material::ALL ; ++i )
-      AddIconToken("$EQMenuText_"+ EQ::g_materials_str[ i ] +"$", "MenuText_Materials.png", g_menu_icon_frame, i );
-    AddIconToken("$EQMenuText_"+ EQ::g_materials_str[ EQ::Material::ALL ] +"$", "MenuText.png", g_menu_text_frame, 0 );
+      AddIconToken("$EQMenuText_"+ EQ::g_materials_str[ i ] +"$", "EQ_MenuText_Materials.png", g_menu_icon_frame, i );
+    AddIconToken("$EQMenuText_"+ EQ::g_materials_str[ EQ::Material::ALL ] +"$", "EQ_MenuText.png", g_menu_text_frame, 0 );
     // Slot Menu Text:
     for( u8 i = 0 ; i <= EQ::Slot::ALL ; ++i )
-      AddIconToken("$EQMenuText_"+ EQ::g_slot_str[ i ] +"$", "MenuText_Slots.png", g_menu_text_frame, i );
+      AddIconToken("$EQMenuText_"+ EQ::g_slot_str[ i ] +"$", "EQ_MenuText_Slots.png", g_menu_text_frame, i );
     // Type Menu Text:
     for( u8 i = 0 ; i <= EQ::Type::ALL ; ++i )
-      AddIconToken("$EQMenuText_"+ EQ::g_type_str[ i ] +"$", "MenuText_Types.png", g_menu_text_frame, i );
+      AddIconToken("$EQMenuText_"+ EQ::g_type_str[ i ] +"$", "EQ_MenuText_Types.png", g_menu_text_frame, i );
     // Class Menu Text:
     for( u8 i = 0 ; i <= EQ::Class::ALL ; ++i )
-      AddIconToken("$EQMenuText_"+ EQ::g_class_str[ i ] +"$", "MenuText_Classes.png", g_menu_text_frame, i );
+      AddIconToken("$EQMenuText_"+ EQ::g_class_str[ i ] +"$", "EQ_MenuText_Classes.png", g_menu_text_frame, i );
   }
 }//EQ
 

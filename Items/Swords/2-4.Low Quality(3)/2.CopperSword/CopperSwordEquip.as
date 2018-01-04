@@ -1,5 +1,5 @@
 
-#include "Factory.as"
+#include "EQ_Factory.as"
 #include "EQ_Items_common.as"
 
 

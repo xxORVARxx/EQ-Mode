@@ -1,5 +1,5 @@
 
-#include "Factory.as"
+#include "EQ_Factory.as"
 #include "EQ_Items_common.as"
 
 
@@ -82,11 +82,11 @@ void onEquip_anim_knight( CSprite@ _this, CBlob@ _blob ) {
   }
 }//*/
 
-/*
+//*
 #define ON_UNEQUIP_ANIM_KNIGHT
 void onUnequip_anim_knight( CSprite@ _this, CBlob@ _blob ) {
   print("onUnequip_anim_knight! "+ g_this_name_str );
-}*/
+}//*/
 
 //*
 #define ON_TICK_ANIM_KNIGHT
@@ -95,73 +95,74 @@ bool onTick_anim_knight( CSprite@ _this, CBlob@ _blob ) {
   return true;
 }//*/
 
-/*
+//*
 #define ON_EQUIP_KNIGHT
 void onEquip_knight( CBlob@ _this ) {
   print("onEquip_knight! "+ g_this_name_str );
-}*/
+}//*/
 
-/*
+//*
 #define ON_UNEQUIP_KNIGHT
 void onUnequip_knight( CBlob@ _this ) {
   print("onUnequip_knight! "+ g_this_name_str );
-}*/
+}//*/
 
 /*
 #define ON_TICK_KNIGHT
-void onTick_knight( CBlob@ _this ) {
+void onTick_knight( CBlob@ _this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onTick_knight! "+ g_this_name_str );
 }*/
 
-/*
+//*
 #define ON_HIT_BLOB_KNIGHT
-void onHitBlob_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data ) {
+void onHitBlob_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHitBlob_knight! "+ g_this_name_str );
-}*/
+}//*/
 
-/*
+//*
 #define ON_HIT_KNIGHT
-f32 onHit_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hitter_blob, u8 _custom_data ) {
+f32 onHit_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _hitter_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHit_knight! "+ g_this_name_str );
-  return _damage;
-}*/
+  return 0; // Return The Amount Of Damage That Is To Be ADDED To The 'original_damage'.
+}//*/
 
-/*
+//*
 #define ON_HEALTH_CHANGE_KNIGHT
-void onHealthChange_knight( CBlob@ _this, f32 _old_health ) {
+void onHealthChange_knight( CBlob@ _this, f32 _old_health, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHealthChange_knight! "+ g_this_name_str );
-}*/
+}//*/
 
-/*
+//*
 #define ON_COLLISION_KNIGHT
-void onCollision_knight( CBlob@ _this, CBlob@ _blob, bool _solid, Vec2f _normal, Vec2f _point_1, Vec2f _point_2 ) {
+void onCollision_knight( CBlob@ _this, CBlob@ _blob, bool _solid, Vec2f _normal, Vec2f _point_1, Vec2f _point_2, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onCollision_knight! "+ g_this_name_str );
-}*/
+}//*/
 
-/*
+//*
 #define ON_END_COLLISION_KNIGHT
-void onEndCollision_knight( CBlob@ _this, CBlob@ _blob ) {
+void onEndCollision_knight( CBlob@ _this, CBlob@ _blob, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onEndCollision_knight! "+ g_this_name_str );
-}*/
+}//*/
 
 /*
 #define DOES_COLLIDE_WITH_BLOB_KNIGHT
-bool doesCollideWithBlob_knight( CBlob@ _this, CBlob@ _blob ) {
+bool doesCollideWithBlob_knight( CBlob@ _this, CBlob@ _blob, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("doesCollideWithBlob_knight! "+ g_this_name_str );
+  // DO NOT USE THIS FUNCTION!
   return false;
 }*/
 
-/*
+//*
 #define ON_HIT_MAP_KNIGHT
-void onHitMap_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, u8 _custom_data ) {
+void onHitMap_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHitMap_knight! "+ g_this_name_str );
-}*/
+}//*/
 
-/*
+//*
 #define ON_DIE_KNIGHT
-void onDie_knight( CBlob@ this ) {
+void onDie_knight( CBlob@ this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onDie_knight! "+ g_this_name_str );
-}*/
+}//*/
 
 
 
@@ -200,57 +201,58 @@ void onUnequip_archer( CBlob@ _this ) {
 
 /*
 #define ON_TICK_ARCHER
-void onTick_archer( CBlob@ _this ) {
+void onTick_archer( CBlob@ _this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onTick_archer! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_HIT_BLOB_ARCHER
-void onHitBlob_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data ) {
+void onHitBlob_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHitBlob_archer! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_HIT_ARCHER
-f32 onHit_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hitter_blob, u8 _custom_data ) {
+f32 onHit_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hitter_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHit_archer! "+ g_this_name_str );
   return _damage;
 }*/
 
 /*
 #define ON_HEALTH_CHANGE_ARCHER
-void onHealthChange_archer( CBlob@ _this, f32 _old_health ) {
+void onHealthChange_archer( CBlob@ _this, f32 _old_health, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHealthChange_archer! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_COLLISION_ARCHER
-void onCollision_archer( CBlob@ _this, CBlob@ _blob, bool _solid, Vec2f _normal, Vec2f _point_1, Vec2f _point_2 ) {
+void onCollision_archer( CBlob@ _this, CBlob@ _blob, bool _solid, Vec2f _normal, Vec2f _point_1, Vec2f _point_2, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onCollision_archer! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_END_COLLISION_ARCHER
-void onEndCollision_archer( CBlob@ _this, CBlob@ _blob ) {
+void onEndCollision_archer( CBlob@ _this, CBlob@ _blob, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onEndCollision_archer! "+ g_this_name_str );
 }*/
 
 /*
 #define DOES_COLLIDE_WITH_BLOB_ARCHER
-bool doesCollideWithBlob_archer( CBlob@ _this, CBlob@ _blob ) {
+bool doesCollideWithBlob_archer( CBlob@ _this, CBlob@ _blob, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("doesCollideWithBlob_archer! "+ g_this_name_str );
+  // DO NOT USE THIS FUNCTION!
   return false;
 }*/
 
 /*
 #define ON_HIT_MAP_ARCHER
-void onHitMap_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, u8 _custom_data ) {
+void onHitMap_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHitMap_archer! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_DIE_ARCHER
-void onDie_archer( CBlob@ this ) {
+void onDie_archer( CBlob@ this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onDie_archer! "+ g_this_name_str );
 }*/
 
@@ -291,56 +293,57 @@ void onUnequip_builder( CBlob@ _this ) {
 
 /*
 #define ON_TICK_BUILDER
-void onTick_builder( CBlob@ _this ) {
+void onTick_builder( CBlob@ _this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onTick_builder! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_HIT_BLOB_BUILDER
-void onHitBlob_builder( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data ) {
+void onHitBlob_builder( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHitBlob_builder! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_HIT_BUILDER
-f32 onHit_builder( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hitter_blob, u8 _custom_data ) {
+f32 onHit_builder( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hitter_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHit_builder! "+ g_this_name_str );
   return _damage;
 }*/
 
 /*
 #define ON_HEALTH_CHANGE_BUILDER
-void onHealthChange_builder( CBlob@ _this, f32 _old_health ) {
+void onHealthChange_builder( CBlob@ _this, f32 _old_health, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHealthChange_builder! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_COLLISION_BUILDER
-void onCollision_builder( CBlob@ _this, CBlob@ _blob, bool _solid, Vec2f _normal, Vec2f _point_1, Vec2f _point_2 ) {
+void onCollision_builder( CBlob@ _this, CBlob@ _blob, bool _solid, Vec2f _normal, Vec2f _point_1, Vec2f _point_2, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onCollision_builder! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_END_COLLISION_BUILDER
-void onEndCollision_builder( CBlob@ _this, CBlob@ _blob ) {
+void onEndCollision_builder( CBlob@ _this, CBlob@ _blob, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onEndCollision_builder! "+ g_this_name_str );
 }*/
 
 /*
 #define DOES_COLLIDE_WITH_BLOB_BUILDER
-bool doesCollideWithBlob_builder( CBlob@ _this, CBlob@ _blob ) {
+bool doesCollideWithBlob_builder( CBlob@ _this, CBlob@ _blob, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("doesCollideWithBlob_builder! "+ g_this_name_str );
-  return false;
+  // DO NOT USE THIS FUNCTION!
+  return true;
 }*/
 
 /*
 #define ON_HIT_MAP_BUILDER
-void onHitMap_builder( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, u8 _custom_data ) {
+void onHitMap_builder( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHitMap_builder! "+ g_this_name_str );
 }*/
 
 /*
 #define ON_DIE_BUILDER
-void onDie_builder( CBlob@ this ) {
+void onDie_builder( CBlob@ this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onDie_builder! "+ g_this_name_str );
 }*/

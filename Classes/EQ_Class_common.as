@@ -280,13 +280,13 @@ namespace EQ {
 	  if( @_item.m_func.m_on_unequip_fptr != null )
 	    _item.m_func.m_on_unequip_fptr( _this );
 	  // Calling 'on_unequip_anim':
-	  if( @_item.m_func.m_on_equip_anim_fptr != null ) {
+	  if( @_item.m_func.m_on_unequip_anim_fptr != null ) {
 	    CSprite@ sprite = _this.getSprite();
 	    if( @sprite == null ) {
 	      print("EQ ERROR: Getting 'sprite' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Equip_item'");
 	      return;
 	    }
-	    _item.m_func.m_on_equip_anim_fptr( sprite, _this );
+	    _item.m_func.m_on_unequip_anim_fptr( sprite, _this );
 	  }
 	  @equip_items[ start ] = null;
 	}

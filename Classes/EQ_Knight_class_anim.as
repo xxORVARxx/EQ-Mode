@@ -4,8 +4,8 @@
 #include "Knocked.as"
 #include "EmotesCommon.as"
 
-#include "Factory.as"
-#include "Class_common.as"
+#include "EQ_Factory.as"
+#include "EQ_Class_common.as"
 
 
 

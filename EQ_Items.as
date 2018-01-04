@@ -197,32 +197,32 @@ namespace EQ {
 	  Money _price,
 	  EQ::Rarity _rarity,
 	  EQ::Material _material,
-	  array< EQ::Item_slot > _item_slots,//
+	  array< EQ::Item_slot > _item_slots,
 	  array< EQ::Type > _types ) {
       m_name = _name;
       m_price = _price;
       m_rarity = _rarity;
       m_material = _material;
-      m_item_slots = _item_slots;//
+      m_item_slots = _item_slots;
       m_types = _types;
     }
                   EQ::Name Get_name() { return m_name; }
                      Money Get_price() { return m_price; }
                 EQ::Rarity Get_rarity() { return m_rarity; }
               EQ::Material Get_material() { return m_material; }
-    array< EQ::Item_slot > Get_item_slots() { return m_item_slots; }//
+    array< EQ::Item_slot > Get_item_slots() { return m_item_slots; }
          array< EQ::Type > Get_types() { return m_types; }
 
-              int Get_item_slots_length() { return m_item_slots.length(); }//
+              int Get_item_slots_length() { return m_item_slots.length(); }
               int Get_types_length() { return m_types.length(); }
-    EQ::Item_slot Get_item_slot_at( const int _index ) { return m_item_slots[ _index ]; }//
+    EQ::Item_slot Get_item_slot_at( const int _index ) { return m_item_slots[ _index ]; }
          EQ::Type Get_type_at( const int _index ) { return m_types[ _index ]; }
 
     private EQ::Name m_name;
     private Money m_price;
     private EQ::Rarity m_rarity;
     private EQ::Material m_material;
-    private array< EQ::Item_slot > m_item_slots;//
+    private array< EQ::Item_slot > m_item_slots;
     private array< EQ::Type > m_types;
   };
 }//EQ

@@ -1,7 +1,7 @@
 
-#include "Factory.as"
+#include "EQ_Factory.as"
 #include "EQ_Commands.as"
-#include "Class_common.as"
+#include "EQ_Class_common.as"
 
 #include "EQ_Class_menu.as"
 #include "EQ_Filter_menu.as"
@@ -11,7 +11,7 @@
 
 
 
-const Vec2f g_frame_size( 32, 32 );
+const Vec2f g_frame_size( 24, 24 );
 
 const u8 g_grid_size = 48;
 const u8 g_grid_padding = 12;
@@ -90,8 +90,8 @@ namespace EQ {
 void onInit( CBlob@ _this ) {
   _this.addCommandID("EQ-CommandID");
 
-  AddIconToken("$EQClassIcon_Clear_Slots$", "EQ_Shop_Icons.png", g_frame_size, 4 );
-  AddIconToken("$EQClassIcon_Drop_Items$",  "EQ_Shop_Icons.png", g_frame_size, 5 );
+  AddIconToken("$EQClassIcon_Clear_Slots$", "EQ_MenuIcons.png", g_frame_size, 4 );
+  AddIconToken("$EQClassIcon_Drop_Items$",  "EQ_MenuIcons.png", g_frame_size, 5 );
 }
 
 

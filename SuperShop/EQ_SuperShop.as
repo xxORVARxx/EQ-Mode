@@ -1,7 +1,7 @@
 ﻿
-#include "Factory.as"
+#include "EQ_Factory.as"
 #include "EQ_Commands.as"
-#include "Class_common.as"
+#include "EQ_Class_common.as"
 
 #include "EQ_Filter_menu.as"
 #include "EQ_Storage_menu.as"
@@ -10,7 +10,7 @@
 
 
 
-const Vec2f g_frame_size( 32, 32 );
+const Vec2f g_frame_size( 24, 24 );
 
 const u8 g_grid_size = 48;
 const u8 g_grid_padding = 12;
@@ -88,11 +88,11 @@ void onInit( CBlob@ _this ) {
 
   _this.addCommandID("EQ-CommandID");
 
-  AddIconToken("$EQShopIcon_AutoSell$", "EQ_Shop_Icons.png", g_frame_size, 0 );
-  AddIconToken("$EQShopIcon_AutoBuy$",  "EQ_Shop_Icons.png", g_frame_size, 1 );
-  AddIconToken("$EQShopIcon_Shop$",     "EQ_Shop_Icons.png", g_frame_size, 2 );
-  AddIconToken("$EQShopIcon_Equip$",    "EQ_Shop_Icons.png", g_frame_size, 3 );
-  AddIconToken("$EQShopIcon_Settings$", "EQ_Shop_Icons.png", g_frame_size, 6 );
+  AddIconToken("$EQShopIcon_AutoSell$", "EQ_MenuIcons.png", g_frame_size, 0 );
+  AddIconToken("$EQShopIcon_AutoBuy$",  "EQ_MenuIcons.png", g_frame_size, 1 );
+  AddIconToken("$EQShopIcon_Shop$",     "EQ_MenuIcons.png", g_frame_size, 2 );
+  AddIconToken("$EQShopIcon_Equip$",    "EQ_MenuIcons.png", g_frame_size, 3 );
+  AddIconToken("$EQShopIcon_Settings$", "EQ_MenuIcons.png", g_frame_size, 6 );
 }
 
 
