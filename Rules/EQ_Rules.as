@@ -12,7 +12,7 @@ const Vec2f g_menu_icon_frame( g_frame_size, g_frame_size );
 
 
 namespace EQ {
-  void Load_menu_text() {
+  void Load_menu_text() { // Server & Local:
     // Material Menu Text:
     for( u8 i = 0 ; i != EQ::Material::ALL ; ++i )
       AddIconToken("$EQMenuText_"+ EQ::g_materials_str[ i ] +"$", "EQ_MenuText_Materials.png", g_menu_icon_frame, i );
@@ -31,7 +31,20 @@ namespace EQ {
 
 
 
-void onInit( CRules@ _this ) {
+namespace EQ {
+  void Set_new_player( CRules@ _this, CPlayer@ _player ) { // Server & Local:
+    print("EQ::Rules: New Player Is Set: "+ _player.getUsername());
+    // Give Each Player Their Unique 'storage_array': 
+    array< EQ::Item_data@ > storage_array;
+    _this.set("EQ-Items Storage-Array"+ _player.getUsername(), storage_array );
+    // Give Each Player Their Unique Shop Menu Settings:
+    _this.set_bool("EQ-Shop-Setting Equip"+ _player.getUsername(), true );
+  }
+}//EQ
+
+
+
+void onInit( CRules@ _this ) { // Server & Local:
   _this.addCommandID("EQ-CommandID");
   // Factory:
   FACTORY::Items factory;
@@ -47,11 +60,15 @@ void onInit( CRules@ _this ) {
 
 
 
-void onNewPlayerJoin( CRules@ _this, CPlayer@ _player ) {
+void onNewPlayerJoin( CRules@ _this, CPlayer@ _player ) { // Server Only:
   if( @_this == null || @_player == null ) {
     print("EQ ERROR: '_this' Or '_player' == null! ->'"+ getCurrentScriptName() +"'->'onNewPlayerJoin'");
     return;
   }
+  CBitStream params;
+  params.write_u8( EQ::Cmds::NEW_PLAYER );
+  params.write_u16( _player.getNetworkID()); 
+  _this.SendCommand( _this.getCommandID("EQ-CommandID"), params );
   // Give Each Player Their Unique Filter Menu Settings:
   _this.set_u8(      "EQ-Filter-Setting Material"+ _player.getUsername(), EQ::Material::ALL );
   _this.SyncToPlayer("EQ-Filter-Setting Material"+ _player.getUsername(), _player );
@@ -60,18 +77,12 @@ void onNewPlayerJoin( CRules@ _this, CPlayer@ _player ) {
   _this.set_u8(      "EQ-Filter-Setting Type"+ _player.getUsername(), EQ::Type::ALL );
   _this.SyncToPlayer("EQ-Filter-Setting Type"+ _player.getUsername(), _player );
   _this.set_u8(      "EQ-Filter-Setting Class"+ _player.getUsername(), EQ::Class::ALL );
-  _this.SyncToPlayer("EQ-Filter-Setting Class"+ _player.getUsername(), _player );  
-  // Give Each Player Their Unique Inventory Menu Settings:
-  _this.set_bool(    "EQ-Inv-Setting Drop"+ _player.getUsername(), false );
-  _this.SyncToPlayer("EQ-Inv-Setting Drop"+ _player.getUsername(), _player );
-  // Give Each Player Their Unique Shop Menu Settings:
-  _this.set_bool(    "EQ-Shop-Setting Equip"+ _player.getUsername(), true );
-  _this.SyncToPlayer("EQ-Shop-Setting Equip"+ _player.getUsername(), _player );
+  _this.SyncToPlayer("EQ-Filter-Setting Class"+ _player.getUsername(), _player );
 }
 
 
 
-void onCommand( CRules@ _this, u8 _cmd, CBitStream@ _params ) {
+void onCommand( CRules@ _this, u8 _cmd, CBitStream@ _params ) { // Server & Local:
   if( _cmd != _this.getCommandID("EQ-CommandID"))
     return;
   _cmd = _params.read_u8();
@@ -81,29 +92,24 @@ void onCommand( CRules@ _this, u8 _cmd, CBitStream@ _params ) {
     print("EQ ERROR: 'EQ::Cmds::BEGIN = "+ EQ::Cmds::BEGIN +"' And 'EQ::Cmds::END = "+ EQ::Cmds::END +"' But the '_cmd = "+ _cmd +"'! ->'"+ getCurrentScriptName() +"'->'onCommand'");
     return;
   }
-  CBlob@ caller = getBlobByNetworkID( _params.read_u16());
-  if( @caller == null ) {
-    print("EQ ERROR: Getting 'caller' Faild! ->'"+ getCurrentScriptName() +"'->'onCommand'");
-    return;
+  uint16 net_id = _params.read_u16();
+  CBlob@ caller_blob = getBlobByNetworkID( net_id );
+  if( @caller_blob == null ) {
+    CPlayer@ caller_player = getPlayerByNetworkId( net_id );
+    if( @caller_player == null ) {      
+      print("EQ ERROR: Getting 'caller_blob' Or 'caller_player' Faild! ->'"+ getCurrentScriptName() +"'->'onCommand'");
+      return;
+    }
+    EQ::On_command_rules( _this, caller_player, _cmd, _params );
   }
-  EQ::On_command_rules( _this, caller, _cmd, _params );
+  EQ::On_command_rules( _this, caller_blob, _cmd, _params );
 }
 
 
 
 namespace EQ {
-  EQ::Cmds On_command_rules( CRules@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) {
+  EQ::Cmds On_command_rules( CRules@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) { // Server & Local:
     switch( _cmd ) {
-      // LOGIC DROP ITEM:
-    case EQ::Cmds::LOGIC_DROP_ITEM : {
-      CBitStream stream;
-      if( ! _params.saferead_CBitStream( stream )) {
-	print("EQ ERROR: 'LOGIC DROP ITEM'-> Safe Reading 'CBitStream' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::On_command_rules'");
-	return EQ::Cmds::NIL;
-      }
-      EQ::Spawn_item_into_world( _caller, stream );
-      return EQ::Cmds::TRUE;
-    }
       // LOGIC PICKUP ITEM:
     case EQ::Cmds::LOGIC_PICKUP_ITEM : {
       CBlob@ item_blob = getBlobByNetworkID( _params.read_u16());
@@ -118,10 +124,20 @@ namespace EQ {
       item_blob.get_CBitStream("EQ Variables", variables );
       // Kill The EQ-Item's Blob:
       item_blob.server_Die();
-      if( _caller.isMyPlayer())
-	EQ::Pickup_item( _caller, item_name, variables );
+      EQ::Pickup_item( _caller, item_name, variables );
       return EQ::Cmds::TRUE;
     }
+    }//switch
+    return EQ::Cmds::FALSE; // '_cmd' Not Found, So Return False.
+  }
+
+
+
+  EQ::Cmds On_command_rules( CRules@ _this, CPlayer@ _caller, u8 _cmd, CBitStream@ _params ) { // Server & Local:
+    switch( _cmd ) {
+      // NEW PLAYER:
+    case EQ::Cmds::NEW_PLAYER :
+      EQ::Set_new_player( _this, _caller );
     }//switch
     return EQ::Cmds::FALSE; // '_cmd' Not Found, So Return False.
   }

@@ -2,14 +2,14 @@
 
 
 namespace EQ {
-  void Storage_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _storage_menu ) {
+  void Storage_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _storage_menu ) { // Local Only:
     _storage_menu.SetCaptionEnabled( false );
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     CPlayer@ player = _caller.getPlayer();
     if( @player == null )
       return;    
     array< EQ::Item_data@ >@ storage_array;
-    player.get("EQ-Items Storage-Array", @storage_array );
+    getRules().get("EQ-Items Storage-Array"+ player.getUsername(), @storage_array );
     if( @storage_array == null ) {
       print("EQ ERROR: Getting 'storage_array' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Storage_menu'");
       return;

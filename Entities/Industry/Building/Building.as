@@ -23,6 +23,7 @@ void onInit(CBlob@ this)
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(0, 0));
 	// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv EQ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+	AddIconToken("$supershop$", "EQ_SuperShop.png", Vec2f( 40, 24 ), 0 );
 	this.set_Vec2f("shop menu size", Vec2f(4, 5));
 	//this.set_Vec2f("shop menu size", Vec2f(4, 4));
 	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ EQ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

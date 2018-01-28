@@ -2,7 +2,7 @@
 
 
 namespace EQ {
-  void Shop_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _shop_menu ) {
+  void Shop_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _shop_menu ) { // Local Only:
     _shop_menu.SetCaptionEnabled( false );
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     for( u16 i = 0 ; i < EQ::Name::ALL ; ++i ) {
@@ -29,7 +29,7 @@ namespace EQ {
 
 
 namespace EQ {
-  void Shop_settings_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _shop_settings_menu ) {
+  void Shop_settings_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _shop_settings_menu ) { // Local Only:
     _shop_settings_menu.SetCaptionEnabled( false );
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     CPlayer@ player = _caller.getPlayer();
@@ -48,7 +48,7 @@ namespace EQ {
 	print("EQ ERROR: Creating 'shop_settings_menu' Grid-Button Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Shop_settings_menu'");
 	return;
       }
-      bool equip = getRules().get_bool("EQ-Shop-Setting Equip"+ player.getUsername());
+      const bool equip = _caller.get_bool("EQ-Shop-Setting Equip");
       if( equip )
 	button.SetSelected( 1 );
       string str = "Auto-Equip The Bought Items.";

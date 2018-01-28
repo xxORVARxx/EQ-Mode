@@ -4,6 +4,7 @@
 namespace EQ {
   enum Cmds {
     BEGIN = 128,
+    NEW_PLAYER,
     /* For Menus: */
     MAIN_MENU,
     MENU,

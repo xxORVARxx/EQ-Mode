@@ -40,7 +40,7 @@ float EQ_Make_sorting_number( CBlob@ _blob, EQ::Item@ m_item, CBitStream@ _varia
 #define HAS_VARIABLES
 void EQ_New_variables( CBlob@ _blob, CBlob@ _owner, CBitStream&inout _variables ) {
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-  const uint16 kill_count = 0;
+  const uint16 kill_count = 10;
   const uint16 owner_id = _owner.getNetworkID();
   _variables.write_u16( kill_count );
   _variables.write_u16( owner_id );
@@ -123,7 +123,7 @@ void onHitBlob_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _d
 #define ON_HIT_KNIGHT
 f32 onHit_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _hitter_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onHit_knight! "+ g_this_name_str );
-  return 0; // Return The Amount Of Damage That Is To Be ADDED To The 'original_damage'.
+  return 10.0; // Return The Amount Of Damage That Is To Be ADDED To The 'original_damage'.
 }//*/
 
 //*
@@ -132,17 +132,17 @@ void onHealthChange_knight( CBlob@ _this, f32 _old_health, EQ::Item_data@ _item_
   print("onHealthChange_knight! "+ g_this_name_str );
 }//*/
 
-//*
+/*
 #define ON_COLLISION_KNIGHT
 void onCollision_knight( CBlob@ _this, CBlob@ _blob, bool _solid, Vec2f _normal, Vec2f _point_1, Vec2f _point_2, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onCollision_knight! "+ g_this_name_str );
-}//*/
+}*/
 
-//*
+/*
 #define ON_END_COLLISION_KNIGHT
 void onEndCollision_knight( CBlob@ _this, CBlob@ _blob, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
   print("onEndCollision_knight! "+ g_this_name_str );
-}//*/
+}*/
 
 /*
 #define DOES_COLLIDE_WITH_BLOB_KNIGHT

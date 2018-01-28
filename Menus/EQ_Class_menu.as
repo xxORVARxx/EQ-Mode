@@ -2,7 +2,7 @@
 
 
 namespace EQ {
-  void Class_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _class_menu ) {
+  void Class_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _class_menu ) { // Local Only:
     _class_menu.SetCaptionEnabled( false );
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     CPlayer@ player = _caller.getPlayer();
@@ -37,7 +37,7 @@ namespace EQ {
 	print("EQ ERROR: Creating 'class_menu' Grid-Button Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Class_menu'");
 	return;
       }
-      bool drop = getRules().get_bool("EQ-Inv-Setting Drop"+ player.getUsername());
+      const bool drop = _caller.get_bool("EQ-Inv-Setting Drop");
       if( drop )
 	button.SetSelected( 1 );
       string str = "Drop Items.";

@@ -25,7 +25,7 @@ const Vec2f g_filter_menu_size( 3, 4 );
 
 
 namespace EQ {
-  void Create_EQmenu_inventory( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) {
+  void Create_EQmenu_inventory( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) { // Local Only:
     Driver@ driver = getDriver();
     if( @driver == null ) {
       print("EQ ERROR: Getting 'driver' Faild! ->'"+ getCurrentScriptName() +"'->'Create_EQinventory_menu'");
@@ -87,29 +87,27 @@ namespace EQ {
 
 
 
-void onInit( CBlob@ _this ) {
+void onInit( CBlob@ _this ) { // Server & Local:
   _this.addCommandID("EQ-CommandID");
-
   AddIconToken("$EQClassIcon_Clear_Slots$", "EQ_MenuIcons.png", g_frame_size, 4 );
   AddIconToken("$EQClassIcon_Drop_Items$",  "EQ_MenuIcons.png", g_frame_size, 5 );
 }
 
 
 
-void onTick( CBlob@ _this ) {
-  if( ! _this.hasTag("EQ"))
-    return;
+void onTick( CBlob@ _this ) { // Server & Local:
   CControls@ controls = _this.getControls();
   if( @controls == null ) {
     print("EQ ERROR: Getting 'controls' Faild! ->'"+ getCurrentScriptName() +"'->'onTick'");
     return;
   }
-  if( controls.isKeyJustPressed( EKEY_CODE::KEY_KEY_I )) {
+  if( controls.isKeyJustPressed( EKEY_CODE::KEY_KEY_I )) { // Local Only:
     CPlayer@ player = _this.getPlayer();
     if( @player == null )
       return;
-    // Reset The Inventory-Menu Drop Setting to 'false':
-    getRules().set_bool("EQ-Inv-Setting Drop"+ player.getUsername(), false );
+    // Reset The Inventory-Menu 'Drop' Setting to 'false':
+    _this.set_bool("EQ-Inv-Setting Drop", false );
+    _this.Sync("EQ-Inv-Setting Drop", false );
     // Open Inventory:
     CBitStream params;
     params.write_u8( EQ::Cmds::MAIN_MENU );
@@ -120,7 +118,7 @@ void onTick( CBlob@ _this ) {
 
 
 
-void onCollision( CBlob@ _this, CBlob@ _blob, bool _solid ) {
+void onCollision( CBlob@ _this, CBlob@ _blob, bool _solid ) { // Server & Local:
   if(( @_this == null )||( @_blob == null ))
     return;
   // Check To See If It's EQ-Item:
@@ -143,7 +141,7 @@ void onCollision( CBlob@ _this, CBlob@ _blob, bool _solid ) {
 
 
 
-void onCommand( CBlob@ _this, u8 _cmd, CBitStream@ _params ) {
+void onCommand( CBlob@ _this, u8 _cmd, CBitStream@ _params ) { // Server & Local:
   if( _cmd != _this.getCommandID("EQ-CommandID"))
     return;
   _cmd = _params.read_u8();
@@ -158,9 +156,12 @@ void onCommand( CBlob@ _this, u8 _cmd, CBitStream@ _params ) {
     print("EQ ERROR: Getting 'caller' Faild! ->'"+ getCurrentScriptName() +"'->'onCommand'");
     return;
   }
-  if( caller.isMyPlayer()) {
-    EQ::Cmds state = EQ::On_command_inventory( _this, caller, _cmd, _params );
-    // Show Main Menu:
+  EQ::Cmds state = EQ::On_command_inventory( _this, caller, _cmd, _params );
+  if( caller.isMyPlayer()) { // Local Only:
+    if( state == EQ::Cmds::FALSE ) {
+      state = EQ::On_command_inventory_local( _this, caller, _cmd, _params );
+    }
+    // Refresh Inventory Menu:
     if( state == EQ::Cmds::MAIN_MENU ) {
       caller.ClearGridMenusExceptInventory();
       EQ::Create_EQmenu_inventory( _this, caller, _params );
@@ -171,21 +172,16 @@ void onCommand( CBlob@ _this, u8 _cmd, CBitStream@ _params ) {
 
 
 namespace EQ {
-  EQ::Cmds On_command_inventory( CBlob@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) {
+  EQ::Cmds On_command_inventory( CBlob@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) { // Server & Local:
     CPlayer@ player = _caller.getPlayer();
     if( @player == null )
       return EQ::Cmds::NIL;
     switch( _cmd ) {
-      // MAIN MENU & MENU & BUTTON_SLOT_EMPTY:
-    case EQ::Cmds::MAIN_MENU :
-    case EQ::Cmds::MENU :
-    case EQ::Cmds::BUTTON_SLOT_EMPTY:
-      return EQ::Cmds::MAIN_MENU;
       // BUTTON STORAGE ITEM:
     case EQ::Cmds::BUTTON_STORAGE_ITEM : {
       u8 index = _params.read_u16();
       EQ::Item_data@ item = EQ::Get_storage_item_by_index( _caller, index );
-      bool drop = getRules().get_bool("EQ-Inv-Setting Drop"+ player.getUsername());
+      const bool drop = _caller.get_bool("EQ-Inv-Setting Drop");
       if( drop )
 	EQ::Drop_item( _caller, item );
       else 
@@ -196,22 +192,39 @@ namespace EQ {
     case EQ::Cmds::BUTTON_SLOT_ITEM : {
       u8 index = _params.read_u8();
       EQ::Item_data@ item = EQ::Get_equip_item_by_index( _caller, index );
-      bool drop = getRules().get_bool("EQ-Inv-Setting Drop"+ player.getUsername());
+      const bool drop = _caller.get_bool("EQ-Inv-Setting Drop");
       if( drop )
 	EQ::Drop_item( _caller, item );
       else 
 	EQ::Unequip_item( _caller, item );
       return EQ::Cmds::MAIN_MENU;
     }
-      // BUTTON CLEAR:
-    case EQ::Cmds::BUTTON_CLEAR :
+    }//switch
+    return EQ::Cmds::FALSE;
+  }
+
+  
+  
+  EQ::Cmds On_command_inventory_local( CBlob@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) { // Local Only:
+    CPlayer@ player = _caller.getPlayer();
+    if( @player == null )
+      return EQ::Cmds::NIL;
+    switch( _cmd ) {
+      // MAIN MENU & MENU & BUTTON_SLOT_EMPTY:
+    case EQ::Cmds::MAIN_MENU :
+    case EQ::Cmds::MENU :
+    case EQ::Cmds::BUTTON_SLOT_EMPTY:
       return EQ::Cmds::MAIN_MENU;
       // BUTTON DROP:
     case EQ::Cmds::BUTTON_DROP : {
-      bool drop = getRules().get_bool("EQ-Inv-Setting Drop"+ player.getUsername());
-      getRules().set_bool(            "EQ-Inv-Setting Drop"+ player.getUsername(), ! drop );
+      const bool drop = _caller.get_bool("EQ-Inv-Setting Drop");
+      _caller.set_bool("EQ-Inv-Setting Drop", ! drop );
+      _caller.Sync("EQ-Inv-Setting Drop", false );
       return EQ::Cmds::MAIN_MENU;
     }
+      // BUTTON CLEAR:
+    case EQ::Cmds::BUTTON_CLEAR :
+      return EQ::Cmds::MAIN_MENU;
     }//switch
     // FILTER:
     EQ::Cmds state = EQ::On_command_filter( _this, _caller, _cmd, _params );

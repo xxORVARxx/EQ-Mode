@@ -151,7 +151,7 @@ void GetButtonsFor( CBlob@ _this, CBlob@ _caller ) {
 
 
 
-void onCommand( CBlob@ _this, u8 _cmd, CBitStream@ _params ) {
+void onCommand( CBlob@ _this, u8 _cmd, CBitStream@ _params ) { // Server & Local:
   if( _cmd != _this.getCommandID("EQ-CommandID"))
     return;
   _cmd = _params.read_u8();
@@ -165,10 +165,13 @@ void onCommand( CBlob@ _this, u8 _cmd, CBitStream@ _params ) {
   if( @caller == null ) {
     print("EQ ERROR: Getting 'caller' Faild! ->'"+ getCurrentScriptName() +"'->'onCommand'");
     return;
-  }  
+  }
+  EQ::Cmds state = EQ::On_command_shop( _this, caller, _cmd, _params );
   if( caller.isMyPlayer()) {
-    EQ::Cmds state = EQ::On_command_shop( _this, caller, _cmd, _params );
-    // Show Main Menu:
+    if( state == EQ::Cmds::FALSE ) {
+      state = EQ::On_command_shop_local( _this, caller, _cmd, _params );
+    }
+    // Refresh Shop Menu:
     if( state == EQ::Cmds::MAIN_MENU ) {
       caller.ClearGridMenusExceptInventory();
       EQ::Create_EQmenu_Shop( _this, caller, _params );
@@ -179,7 +182,7 @@ void onCommand( CBlob@ _this, u8 _cmd, CBitStream@ _params ) {
 
 
 namespace EQ {
-  EQ::Cmds On_command_shop( CBlob@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) {
+  EQ::Cmds On_command_shop( CBlob@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) { // Server & Local:
     CPlayer@ player = _caller.getPlayer();
     if( @player == null )
       return EQ::Cmds::NIL;
@@ -190,17 +193,30 @@ namespace EQ {
       // SHOP AUTO BUY:
     case EQ::Cmds::SHOP_AUTO_BUY :
       return EQ::Cmds::TRUE;
+      // BUTTON SHOP ITEM:
+    case EQ::Cmds::BUTTON_SHOP_ITEM : {
+      EQ::Name item_name = EQ::Name(_params.read_u16());
+      const bool epuip = _caller.get_bool("EQ-Shop-Setting Equip");
+      EQ::Create_item( _caller, _caller, item_name, epuip );
+      return EQ::Cmds::MAIN_MENU;
+    }
+    }//switch
+    return EQ::Cmds::FALSE;
+  }
+
+  
+  
+  EQ::Cmds On_command_shop_local( CBlob@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) { // Local Only:
+    /*
+    CPlayer@ player = _caller.getPlayer();
+    if( @player == null )
+      return EQ::Cmds::NIL;
+    */
+    switch( _cmd ) {
       // MAIN MENU & MENU:
     case EQ::Cmds::MAIN_MENU :
     case EQ::Cmds::MENU :
       return EQ::Cmds::MAIN_MENU;
-      // BUTTON SHOP ITEM:
-    case EQ::Cmds::BUTTON_SHOP_ITEM : {
-      EQ::Name item_name = EQ::Name(_params.read_u16());
-      const bool epuip = getRules().get_bool("EQ-Shop-Setting Equip"+ player.getUsername());
-      EQ::Create_item( _caller, _caller, item_name, epuip );
-      return EQ::Cmds::MAIN_MENU;
-    }
       // BUTTON STORAGE ITEM:
     case EQ::Cmds::BUTTON_STORAGE_ITEM :
       return EQ::Cmds::MAIN_MENU;
@@ -208,9 +224,10 @@ namespace EQ {
     case EQ::Cmds::BUTTON_SETTINGS :
       return EQ::Cmds::MAIN_MENU;
       // BUTTON EQUIP:
-    case EQ::Cmds::BUTTON_EQUIP : {
-      bool equip = getRules().get_bool("EQ-Shop-Setting Equip"+ player.getUsername());
-      getRules().set_bool(    "EQ-Shop-Setting Equip"+ player.getUsername(), ! equip );
+    case EQ::Cmds::BUTTON_EQUIP : {      
+      const bool equip = _caller.get_bool("EQ-Shop-Setting Equip");
+      _caller.set_bool("EQ-Shop-Setting Equip", ! equip );
+      _caller.Sync("EQ-Shop-Setting Equip", false );
       return EQ::Cmds::MAIN_MENU;
     }
     }//switch

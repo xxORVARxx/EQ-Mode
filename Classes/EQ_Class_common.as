@@ -107,9 +107,9 @@ namespace EQ {
   bool Remove_storage_item( CBlob@ _this, EQ::Item_data@ _item ) {
     CPlayer@ player = _this.getPlayer();
     if( @player == null )
-      return false;    
+      return false;
     array< EQ::Item_data@ >@ storage_array;
-    player.get("EQ-Items Storage-Array", @storage_array );
+    getRules().get("EQ-Items Storage-Array"+ player.getUsername(), @storage_array );
     if( @storage_array == null )
       return false;
     bool removed = false;
@@ -133,7 +133,7 @@ namespace EQ {
     if( @player == null )
       return null;
     array< EQ::Item_data@ >@ storage_array;
-    player.get("EQ-Items Storage-Array", @storage_array );
+    getRules().get("EQ-Items Storage-Array"+ player.getUsername(), @storage_array );
     if( @storage_array == null ) {
       print("EQ ERROR: Getting 'storage_array' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Get_storage_item_by_index'");
       return null;
@@ -182,13 +182,14 @@ namespace EQ {
 
 
 namespace EQ {
-  void Create_item( CBlob@ _this, CBlob@ _owner, EQ::Name _item_name, const bool _equip ) {
+  void Create_item( CBlob@ _this, CBlob@ _owner, EQ::Name _item_name, const bool _equip ) { // Server & Local:
     CPlayer@ player = _this.getPlayer();
     if( @player == null ) {
       print("EQ ERROR: Getting 'player' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Create_item'");
       return;
     }
-    if( ! player.exists("EQ-Items Storage-Array")) {
+    print("EQ::Create_item -> '"+ EQ::g_name_str[ _item_name ] +"' For: "+ player.getUsername());//
+    if( ! getRules().exists("EQ-Items Storage-Array"+ player.getUsername())) {
       print("EQ ERROR: Player's 'EQ-Items Storage-Array' Does Not Exist! ->'"+ getCurrentScriptName() +"'->'EQ::Create_item'");
       return;
     }
@@ -210,19 +211,20 @@ namespace EQ {
 	func.m_new_variables_fptr( _this, _owner, variables );
     }
     EQ::Item_data data( item, func, variables );
-    player.push("EQ-Items Storage-Array", @data );
+    getRules().push("EQ-Items Storage-Array"+ player.getUsername(), @data );
     if( _equip )
       EQ::Equip_item( _owner, @data );
   }
 
 
-  void Pickup_item( CBlob@ _carrier, EQ::Name _item_name, CBitStream@ _variables ) {
+  void Pickup_item( CBlob@ _carrier, EQ::Name _item_name, CBitStream@ _variables ) { // Server & Local:
     CPlayer@ player = _carrier.getPlayer();
     if( @player == null ) {
       print("EQ ERROR: Getting 'player' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Pickup_item'");
       return;
     }
-    if( ! player.exists("EQ-Items Storage-Array")) {
+    print("EQ::Pickup_item -> '"+ EQ::g_name_str[ _item_name ] +"' For: "+ player.getUsername());//
+    if( ! getRules().exists("EQ-Items Storage-Array"+ player.getUsername())) {
       print("EQ ERROR: Player's 'EQ-Items Storage-Array' Does Not Exist! ->'"+ getCurrentScriptName() +"'->'EQ::Pickup_item'");
       return;
     }
@@ -239,16 +241,17 @@ namespace EQ {
     }
     EQ::Item_functionality@ func = factory.Get_functionality( _item_name, EQ::Class(_carrier.get_u8("EQ This Class")));
     EQ::Item_data data( item, func, _variables );
-    player.push("EQ-Items Storage-Array", @data );
+    getRules().push("EQ-Items Storage-Array"+ player.getUsername(), @data );
   }
 }//EQ
 
 
 
 namespace EQ {
-  void Equip_item( CBlob@ _this, EQ::Item_data@ _item ) {
+  void Equip_item( CBlob@ _this, EQ::Item_data@ _item ) { // Server & Local:
     if( @_item == null )
       return;
+    print("EQ::Equip_item -> '"+ EQ::g_name_str[ _item.m_item.Get_name() ] );//
     // Geting All Of The Currently Equip Items:
     array< EQ::Item_data@ >@ equip_items = EQ::Get_equip_items( _this );
     // Geting All Of The Class's Slots:
@@ -308,6 +311,7 @@ namespace EQ {
 	  }
 	}
 	// Congrats! The Item Is Equipt!
+	print("EQ::Equip_item -> Congrats! The Item Is Equipt!" );//
 	return;
       }//for
     }//for
@@ -315,9 +319,10 @@ namespace EQ {
 
 
   
-  void Unequip_item( CBlob@ _this, EQ::Item_data@ _item ) {
+  void Unequip_item( CBlob@ _this, EQ::Item_data@ _item ) { // Server & Local:
     if( @_item == null )
       return;
+    print("EQ::Unequip_item -> '"+ EQ::g_name_str[ _item.m_item.Get_name() ] );//
     // Remove Equip Item From Slot:
     if( ! EQ::Remove_equip_item( _this, _item ))
       return;
@@ -343,60 +348,45 @@ namespace EQ {
 
 
 namespace EQ {
-  void Drop_item( CBlob@ _this, EQ::Item_data@ _item ) {
-    if( @_item == null )
+  void Drop_item( CBlob@ _caller, EQ::Item_data@ _item ) { // Server & Local:
+    if( @_item == null ) {
+      print("EQ ERROR: No 'Item_data': @_item == null! ->'"+ getCurrentScriptName() +"'->'EQ::Drop_item'");
       return;
-    EQ::Unequip_item( _this, _item );
+    }
+    print("EQ::Drop_item -> '"+ EQ::g_name_str[ _item.m_item.Get_name() ] );//
+    EQ::Unequip_item( _caller, _item );
     // Remove Item From Starage:
-    if( ! EQ::Remove_storage_item( _this, _item ))
-      return;
-    CBitStream stream;
-    // Serialising The Item And Sending It To The Server To Spawn It Into The World:
-    EQ::Serialise_item( _item, stream );
-    CBitStream params;
-    params.write_u8( EQ::Cmds::LOGIC_DROP_ITEM );
-    params.write_u16( _this.getNetworkID());
-    params.write_CBitStream( stream );
-    getRules().SendCommand( getRules().getCommandID("EQ-CommandID"), params );
-  }
-
-
-
-  void Spawn_item_into_world( CBlob@ _caller, CBitStream@ _stream ) {
-    if(( @_caller == null )||( @_stream == null )) {
-      print("EQ ERROR: ( @_caller == null ) Or ( @_stream == null )! ->'"+ getCurrentScriptName() +"'->'EQ::Spawn_item_into_world'");
+    if( ! EQ::Remove_storage_item( _caller, _item )) {
+      print("EQ ERROR: Faild To Remove Itme From Storage: "+ EQ::g_name_str[ _item.m_item.Get_name() ] +
+	    "! ->'"+ getCurrentScriptName() +"'->'EQ::Drop_item'");
       return;
     }
-    EQ::Item_data item( null, null, null );
-    // Unserialising The Item So The Server Can Spawn It Into The World:
-    if( ! EQ::Unserialise_item( _caller, item, _stream )) {
-      print("EQ ERROR: Unserialising Dropped Item Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Spawn_item_into_world'");
-      return;
-    }
-    if( @item == null ) {
-      print("EQ ERROR: @item == null! ->'"+ getCurrentScriptName() +"'->'EQ::Spawn_item_into_world'");
-      return;
-    }
-    if( getNet().isServer()) {
-      CBlob@ item_blob = server_CreateBlob( EQ::g_name_str[ item.m_item.Get_name() ],
+    if( getNet().isServer()) { // Server Only:
+      CBlob@ item_blob = server_CreateBlob( EQ::g_name_str[ _item.m_item.Get_name() ],
 					    _caller.getTeamNum(),
 					    _caller.getPosition());
       if( @item_blob == null ) {
-	print("EQ ERROR: 'server_CreateBlob' Faild For Item: "+ EQ::g_name_str[ item.m_item.Get_name() ] +
+	print("EQ ERROR: 'server_CreateBlob' Faild For Item: "+ EQ::g_name_str[ _item.m_item.Get_name() ] +
 	      "! ->'"+ getCurrentScriptName() +"'->'EQ::Spawn_item_into_world'");
 	return;
       }
       // Carry The EQ-Item When It's Dropped:
       CBlob@ carrying = _caller.getCarriedBlob();
       if( @carrying == null ) {
-	if( _caller.server_Pickup( item_blob ))
+	if( _caller.server_Pickup( item_blob )) {
 	  item_blob.Tag("EQ Last Carrier Can Pickup");
+	  item_blob.Sync("EQ Last Carrier Can Pickup", true );
+	}
       }
       // Giving The 'blob' All The Data:
-      item_blob.Tag("EQ");
-      item_blob.set_u16("EQ This Item", item.m_item.Get_name());
-      item_blob.set_CBitStream("EQ Variables", item.m_variables );
+      item_blob.Tag( "EQ");
+      item_blob.Sync("EQ", true );
+      item_blob.set_u16("EQ This Item", _item.m_item.Get_name());
+      item_blob.Sync(   "EQ This Item", true );
+      item_blob.set_CBitStream("EQ Variables", _item.m_variables );
+      item_blob.Sync(          "EQ Variables", true );
       item_blob.set_u16("EQ Last Carrier", _caller.getNetworkID());
-    }
+      item_blob.Sync(   "EQ Last Carrier", true );
+    }     
   }
 }//EQ

@@ -26,6 +26,7 @@ void onTick( CBlob@ _this ) {
 
 
 void onHitBlob( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data ) {
+  print("onHitBlob");//
   // Geting All Of The Currently Equip Items:
   array< EQ::Item_data@ >@ equip_items = EQ::Get_equip_items( _this );
   // Geting All Of The Class's Slots:
@@ -47,6 +48,7 @@ void onHitBlob( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, 
 
 
 f32 onHit( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hitter_blob, u8 _custom_data ) {
+  print("onHit");//
   // Geting All Of The Currently Equip Items:
   array< EQ::Item_data@ >@ equip_items = EQ::Get_equip_items( _this );
   // Geting All Of The Class's Slots:
@@ -64,12 +66,14 @@ f32 onHit( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob
     // Calling The 'on_Hit' Function For All Equip EQ-Items:
     damage += equip_items[i].m_func.m_on_hit_fptr( _this, _world_point, _velocity, _damage, _hitter_blob, _custom_data, equip_items[i], class_slots[i].m_slot );
   }//for
+  printFloat("onHit Damage: ", _damage + damage );
   return _damage + damage;
 }
 
 
 
 void onHealthChange( CBlob@ _this, f32 _old_health ) {
+  print("onHealthChange");//
   // Geting All Of The Currently Equip Items:
   array< EQ::Item_data@ >@ equip_items = EQ::Get_equip_items( _this );
   // Geting All Of The Class's Slots:

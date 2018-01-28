@@ -2,7 +2,7 @@
 
 
 namespace EQ {
-  void Slot_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _slot_menu ) {
+  void Slot_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _slot_menu ) { // Local Only:
     _slot_menu.SetCaptionEnabled( false );
     array< EQ::Item_data@ >@ equip_items = EQ::Get_equip_items( _caller );
     array< EQ::Class_slot@ >@ class_slots = EQ::Get_class_slots( _caller );

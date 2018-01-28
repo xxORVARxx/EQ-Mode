@@ -8,7 +8,7 @@ const Vec2f g_menu_classes_size( 3, 4 );
 
 
 namespace EQ {
-  void Filter_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _filter_menu ) {
+  void Filter_menu( CBlob@ _this, CBlob@ _caller, CBitStream@ _params, CGridMenu@ _filter_menu ) { // Local Only:
     _filter_menu.SetCaptionEnabled( false );
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     CPlayer@ player = _caller.getPlayer();
@@ -88,7 +88,7 @@ namespace EQ {
 
 
 namespace EQ {
-  void Create_EQmenu_materials( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) {
+  void Create_EQmenu_materials( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) { // Local Only:
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     Driver@ driver = getDriver();
     if( @driver == null ) {
@@ -142,7 +142,7 @@ namespace EQ {
 
 
   
-  void Create_EQmenu_slots( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) {
+  void Create_EQmenu_slots( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) { // Local Only:
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     Driver@ driver = getDriver();
     if( @driver == null ) {
@@ -272,7 +272,7 @@ namespace EQ {
 
 
 
-  void Create_EQmenu_types( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) {
+  void Create_EQmenu_types( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) { // Local Only:
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     Driver@ driver = getDriver();
     if( @driver == null ) {
@@ -446,7 +446,7 @@ namespace EQ {
 
 
 
-  void Create_EQmenu_classes( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) {
+  void Create_EQmenu_classes( CBlob@ _this, CBlob@ _caller, CBitStream@ _params ) { // Local Only:
     uint8 cmdID = _this.getCommandID("EQ-CommandID");
     Driver@ driver = getDriver();
     if( @driver == null ) {
@@ -503,7 +503,7 @@ namespace EQ {
 
 
 namespace EQ {
-  EQ::Cmds On_command_filter( CBlob@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) {
+  EQ::Cmds On_command_filter( CBlob@ _this, CBlob@ _caller, u8 _cmd, CBitStream@ _params ) { // Local Only:
     CPlayer@ player = _caller.getPlayer();
     if( @player == null )
       return EQ::Cmds::NIL;
