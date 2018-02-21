@@ -1,6 +1,7 @@
 
 #include "EQ_Factory.as"
 #include "EQ_Commands.as"
+#include "EQ_Rules_common.as"
 #include "EQ_Class_common.as"
 
 
@@ -31,19 +32,6 @@ namespace EQ {
 
 
 
-namespace EQ {
-  void Set_new_player( CRules@ _this, CPlayer@ _player ) { // Server & Local:
-    print("EQ::Rules: New Player Is Set: "+ _player.getUsername());
-    // Give Each Player Their Unique 'storage_array': 
-    array< EQ::Item_data@ > storage_array;
-    _this.set("EQ-Items Storage-Array"+ _player.getUsername(), storage_array );
-    // Give Each Player Their Unique Shop Menu Settings:
-    _this.set_bool("EQ-Shop-Setting Equip"+ _player.getUsername(), true );
-  }
-}//EQ
-
-
-
 void onInit( CRules@ _this ) { // Server & Local:
   _this.addCommandID("EQ-CommandID");
   // Factory:
@@ -65,19 +53,7 @@ void onNewPlayerJoin( CRules@ _this, CPlayer@ _player ) { // Server Only:
     print("EQ ERROR: '_this' Or '_player' == null! ->'"+ getCurrentScriptName() +"'->'onNewPlayerJoin'");
     return;
   }
-  CBitStream params;
-  params.write_u8( EQ::Cmds::NEW_PLAYER );
-  params.write_u16( _player.getNetworkID()); 
-  _this.SendCommand( _this.getCommandID("EQ-CommandID"), params );
-  // Give Each Player Their Unique Filter Menu Settings:
-  _this.set_u8(      "EQ-Filter-Setting Material"+ _player.getUsername(), EQ::Material::ALL );
-  _this.SyncToPlayer("EQ-Filter-Setting Material"+ _player.getUsername(), _player );
-  _this.set_u8(      "EQ-Filter-Setting Slot"+ _player.getUsername(), EQ::Slot::ALL );
-  _this.SyncToPlayer("EQ-Filter-Setting Slot"+ _player.getUsername(), _player );
-  _this.set_u8(      "EQ-Filter-Setting Type"+ _player.getUsername(), EQ::Type::ALL );
-  _this.SyncToPlayer("EQ-Filter-Setting Type"+ _player.getUsername(), _player );
-  _this.set_u8(      "EQ-Filter-Setting Class"+ _player.getUsername(), EQ::Class::ALL );
-  _this.SyncToPlayer("EQ-Filter-Setting Class"+ _player.getUsername(), _player );
+  EQ::Serialize_storage_array_to_sync( _this, _player );
 }
 
 
@@ -91,7 +67,7 @@ void onCommand( CRules@ _this, u8 _cmd, CBitStream@ _params ) { // Server & Loca
       return;
     print("EQ ERROR: 'EQ::Cmds::BEGIN = "+ EQ::Cmds::BEGIN +"' And 'EQ::Cmds::END = "+ EQ::Cmds::END +"' But the '_cmd = "+ _cmd +"'! ->'"+ getCurrentScriptName() +"'->'onCommand'");
     return;
-  }
+  }  
   uint16 net_id = _params.read_u16();
   CBlob@ caller_blob = getBlobByNetworkID( net_id );
   if( @caller_blob == null ) {
@@ -136,8 +112,8 @@ namespace EQ {
   EQ::Cmds On_command_rules( CRules@ _this, CPlayer@ _caller, u8 _cmd, CBitStream@ _params ) { // Server & Local:
     switch( _cmd ) {
       // NEW PLAYER:
-    case EQ::Cmds::NEW_PLAYER :
-      EQ::Set_new_player( _this, _caller );
+    case EQ::Cmds::NEW_PLAYER : // Local Only:
+      EQ::Unserialize_storage_array_after_sync( _this, _caller, _params );
     }//switch
     return EQ::Cmds::FALSE; // '_cmd' Not Found, So Return False.
   }

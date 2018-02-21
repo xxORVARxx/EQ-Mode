@@ -25,6 +25,55 @@ void onTick( CBlob@ _this ) {
 
 
 
+f32 onHit( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _enemy_blob, u8 _custom_data ) {
+  print("onHit -> defend and attack");//
+  f32 defense = 0.0f;
+  f32 damage = 0.0f;
+  {// DEFENSE:
+    // Geting All Of The Currently Equip Items:
+    array< EQ::Item_data@ >@ equip_items = EQ::Get_equip_items( _this );
+    // Geting All Of The Class's Slots:
+    array< EQ::Class_slot@ >@ class_slots = EQ::Get_class_slots( _this );
+    if(( @equip_items == null )||( @class_slots == null ))
+      return _damage;
+    for( u8 i = 0 ; i < equip_items.length() ; ++i ) {
+      if( @equip_items[i] == null )
+	continue;
+      if( @equip_items[i].m_func == null )
+	continue;
+      if( @equip_items[i].m_func.m_on_health_change_fptr == null )
+	continue;
+      // Calling The 'on_defend' Function For All Equip EQ-Items:
+      defense += equip_items[i].m_func.m_on_defend_fptr( _this, _world_point, _velocity, _damage, _enemy_blob, _custom_data, equip_items[i], class_slots[i].m_slot );
+    }//for
+  }//~
+  {// ATTACK:
+    // Geting All Of The Currently Equip Items:
+    array< EQ::Item_data@ >@ equip_items = EQ::Get_equip_items( _enemy_blob );
+    // Geting All Of The Class's Slots:
+    array< EQ::Class_slot@ >@ class_slots = EQ::Get_class_slots( _enemy_blob );
+    if(( @equip_items == null )||( @class_slots == null ))
+      return _damage;
+    for( u8 i = 0 ; i < equip_items.length() ; ++i ) {
+      if( @equip_items[i] == null )
+	continue;
+      if( @equip_items[i].m_func == null )
+	continue;
+      if( @equip_items[i].m_func.m_on_health_change_fptr == null )
+	continue;
+      // Calling The 'on_attack' Function For All Equip EQ-Items:
+      damage += equip_items[i].m_func.m_on_attack_fptr( _this, _world_point, _velocity, _damage, _enemy_blob, _custom_data, equip_items[i], class_slots[i].m_slot );
+    }//for
+  }//~
+  printFloat("         _damage = ", _damage );
+  printFloat("         Damage  = ", damage );
+  printFloat("         Defense = ", defense );
+  printFloat("         _damage + damage - defense = ", _damage + damage - defense );
+  return _damage + damage - defense;
+}
+
+
+
 void onHitBlob( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data ) {
   print("onHitBlob");//
   // Geting All Of The Currently Equip Items:
@@ -43,31 +92,6 @@ void onHitBlob( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, 
     // Calling The 'on_Hit_Blob' Function For All Equip EQ-Items:
     equip_items[i].m_func.m_on_hit_blob_fptr( _this, _world_point, _velocity, _damage, _hit_blob, _custom_data, equip_items[i], class_slots[i].m_slot );
   }//for
-}
-
-
-
-f32 onHit( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hitter_blob, u8 _custom_data ) {
-  print("onHit");//
-  // Geting All Of The Currently Equip Items:
-  array< EQ::Item_data@ >@ equip_items = EQ::Get_equip_items( _this );
-  // Geting All Of The Class's Slots:
-  array< EQ::Class_slot@ >@ class_slots = EQ::Get_class_slots( _this );
-  if(( @equip_items == null )||( @class_slots == null ))
-    return _damage;
-  f32 damage = 0;
-  for( u8 i = 0 ; i < equip_items.length() ; ++i ) {
-    if( @equip_items[i] == null )
-      continue;
-    if( @equip_items[i].m_func == null )
-      continue;
-    if( @equip_items[i].m_func.m_on_hit_fptr == null )
-      continue;
-    // Calling The 'on_Hit' Function For All Equip EQ-Items:
-    damage += equip_items[i].m_func.m_on_hit_fptr( _this, _world_point, _velocity, _damage, _hitter_blob, _custom_data, equip_items[i], class_slots[i].m_slot );
-  }//for
-  printFloat("onHit Damage: ", _damage + damage );
-  return _damage + damage;
 }
 
 

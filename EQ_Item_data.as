@@ -2,36 +2,48 @@
 
 
 namespace EQ {
-  void Serialise_item( EQ::Item_data@ _item_data, CBitStream@ _stream ) {
+  void Serialize_item( EQ::Item_data@ _item_data, CBitStream@ _stream ) {
     if( @_item_data == null )
       return;
     _stream.write_u16( _item_data.m_item.Get_name()); //   1: write_u16.
-    _stream.write_CBitStream( _item_data.m_variables ); // 2: write_CBitStream.
+    _stream.write_s8( _item_data.m_equip_slot ); //        2: write_s8.
+    _stream.write_CBitStream( _item_data.m_variables ); // 3: write_CBitStream.
   }
 
 
   
-  bool Unserialise_item( CBlob@ _this, EQ::Item_data&inout _item_data, CBitStream@ _stream ) {
+  bool Unserialize_item( CBlob@ _this, EQ::Item_data&inout _item_data, CBitStream@ _stream ) {
     FACTORY::Items@ factory;
     getRules().get("factory", @factory );
     if( @factory == null ) {
-      print("EQ ERROR: Getting Factory Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialise'");
+      print("EQ ERROR: Getting Factory Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialize'");
       return false;
     }
+    // Get 'item_name', This Must Be In The Stream:
     u16 item_name;
-    CBitStream variables;
-    // Resteting The Bit Stream, So It Always Start Reading From The Begining Of The Stream:
-    _stream.ResetBitIndex();
-    if( ! _stream.saferead_u16( item_name )) //        1: read_u16.
-      return false;
-    if( ! _stream.saferead_CBitStream( variables )) // 2: read_CBitStream.
-      return false;
-    @_item_data.m_item = factory.Get_item( EQ::Name(item_name) );
-    if( @_item_data.m_item == null ) {
-      print("EQ ERROR: Getting Item From Factory Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialise'");
+    if( ! _stream.saferead_u16( item_name )) { //        1: read_u16.
+      print("EQ ERROR: Data Stream Corrupted, Getting 'item_name' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialize_item'");
       return false;
     }
-    @_item_data.m_func = factory.Get_functionality( EQ::Name(item_name), EQ::Class(_this.get_u8("EQ This Class")));
+    @_item_data.m_item = @factory.Get_item( EQ::Name(item_name) );
+    if( @_item_data.m_item == null ) {
+      print("EQ ERROR: Getting Item From Factory Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialize_item'");
+      return false;
+    }
+    @_item_data.m_func = @factory.Get_functionality( EQ::Name(item_name), EQ::Class(_this.get_u8("EQ This Class")));
+    // Get 'equip_slot', If It's In The Stream:
+    s8 equip_slot;
+    if( ! _stream.saferead_s8( equip_slot )) { //        2: read_s8.
+      print("EQ ERROR: Data Stream Corrupted, Getting 'equip_slot' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialize_item'");
+      return false;
+    }
+    _item_data.m_equip_slot = equip_slot;
+    // Get 'variables', If It's In The Stream:
+    CBitStream variables;
+    if( ! _stream.saferead_CBitStream( variables )) { // 3: read_CBitStream.
+      print("EQ ERROR: Data Stream Corrupted, Getting 'variables' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialize_item'");
+      return false;
+    }
     @_item_data.m_variables = @variables;
     return true;
   }  
@@ -39,10 +51,10 @@ namespace EQ {
   
 
   /*
-  void Serialise( array< EQ::Item_data@ >@ _data_array, CBitStream@ _stream ) {
+  void Serialize( array< EQ::Item_data@ >@ _data_array, CBitStream@ _stream ) {
     for( uint i = 0 ; i < _data_array.length() ; ++i ) {
       if( @_data_array[ i ] == null ) {
-	print("EQ ERROR: Element In '_data_array' == null! ->'"+ getCurrentScriptName() +"'->'EQ::Serialise'");
+	print("EQ ERROR: Element In '_data_array' == null! ->'"+ getCurrentScriptName() +"'->'EQ::Serialize'");
 	printInt("          i: ", i );
 	return;
       }
@@ -55,11 +67,11 @@ namespace EQ {
     }//for
   }
 
-  bool Unserialise( CBlob@ _this, array< EQ::Item_data@ >@ _data_array, CBitStream@ _stream ) {
+  bool Unserialize( CBlob@ _this, array< EQ::Item_data@ >@ _data_array, CBitStream@ _stream ) {
     FACTORY::Items@ factory;
     getRules().get("factory", @factory );
     if( @factory == null ) {
-      print("EQ ERROR: Getting Factory Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialise'");
+      print("EQ ERROR: Getting Factory Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialize'");
       return false;
     }
                       //printInt("444444444444 stream size: ", _stream.Length());	  
@@ -79,7 +91,7 @@ namespace EQ {
       @data.m_variables = @variables;
       @data.m_item = factory.Get_item( EQ::Name(item_type) );
       if( @data.m_item == null ) {
-	print("EQ ERROR: Getting Item From Factory Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialise'");
+	print("EQ ERROR: Getting Item From Factory Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unserialize'");
 	return false;
       }
                            //printInt("444444444444 data: ", data.m_item.Get_name());

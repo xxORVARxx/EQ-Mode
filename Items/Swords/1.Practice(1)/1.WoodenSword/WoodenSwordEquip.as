@@ -114,16 +114,26 @@ void onTick_knight( CBlob@ _this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
 }*/
 
 //*
-#define ON_HIT_BLOB_KNIGHT
-void onHitBlob_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
-  print("onHitBlob_knight! "+ g_this_name_str );
+#define ON_DEFEND_KNIGHT
+f32 onDefend_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _enemy_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
+  print("onDefend_knight! "+ g_this_name_str );
+  return 2.0; // Return The Amount Of Damage That Is To Be SUBTRACTED From The 'total_damage'.
 }//*/
 
 //*
-#define ON_HIT_KNIGHT
-f32 onHit_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _hitter_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
-  print("onHit_knight! "+ g_this_name_str );
-  return 10.0; // Return The Amount Of Damage That Is To Be ADDED To The 'original_damage'.
+#define ON_ATTACK_KNIGHT
+f32 onAttack_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _enemy_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
+  print("onAttack_knight! "+ g_this_name_str );
+  return 3.5; // Return The Amount Of Damage That Is To Be ADDED To The 'original_damage'.
+}//*/
+
+
+
+
+//*
+#define ON_HIT_BLOB_KNIGHT
+void onHitBlob_knight( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
+  print("onHitBlob_knight! "+ g_this_name_str );
 }//*/
 
 //*
@@ -206,16 +216,23 @@ void onTick_archer( CBlob@ _this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
 }*/
 
 /*
-#define ON_HIT_BLOB_ARCHER
-void onHitBlob_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
-  print("onHitBlob_archer! "+ g_this_name_str );
+#define ON_DEFEND_ARCHER
+f32 onDefend_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _enemy_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
+  print("onDefend_archer! "+ g_this_name_str );
+  return 0.0; // Return The Amount Of Damage That Is To Be SUBTRACTED From The 'total_damage'.
 }*/
 
 /*
-#define ON_HIT_ARCHER
-f32 onHit_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hitter_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
-  print("onHit_archer! "+ g_this_name_str );
-  return _damage;
+#define ON_ATTACK_ARCHER
+f32 onAttack_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _enemy_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
+  print("onAttack_archer! "+ g_this_name_str );
+  return 0.0; // Return The Amount Of Damage That Is To Be ADDED To The 'original_damage'.
+}*/
+
+/*
+#define ON_HIT_BLOB_ARCHER
+void onHitBlob_archer( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _damage, CBlob@ _hit_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
+  print("onHitBlob_archer! "+ g_this_name_str );
 }*/
 
 /*
@@ -292,9 +309,17 @@ void onUnequip_builder( CBlob@ _this ) {
 }*/
 
 /*
-#define ON_TICK_BUILDER
-void onTick_builder( CBlob@ _this, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
-  print("onTick_builder! "+ g_this_name_str );
+#define ON_DEFEND_BUILDER
+f32 onDefend_builder( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _enemy_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
+  print("onDefend_builder! "+ g_this_name_str );
+  return 0.0; // Return The Amount Of Damage That Is To Be SUBTRACTED From The 'total_damage'.
+}*/
+
+/*
+#define ON_ATTACK_BUILDER
+f32 onAttack_builder( CBlob@ _this, Vec2f _world_point, Vec2f _velocity, f32 _original_damage, CBlob@ _enemy_blob, u8 _custom_data, EQ::Item_data@ _item_data, EQ::Slot _slot ) {
+  print("onAttack_builder! "+ g_this_name_str );
+  return 0.0; // Return The Amount Of Damage That Is To Be ADDED To The 'original_damage'.
 }*/
 
 /*

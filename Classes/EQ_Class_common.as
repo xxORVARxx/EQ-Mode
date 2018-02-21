@@ -58,42 +58,81 @@ namespace EQ {
   }
 
   
-  
+
   void Set_equip_item( CBlob@ _this, const int _index, EQ::Item_data@ _item ) {
+    if(( @_this == null )||( @_item == null ))
+      return;
     if(( ! _this.exists("EQ Number Of Slots"))||( ! _this.exists("EQ Equip-Items-Array"))) {
-      print("EQ ERROR: Add Some Slots First! ->'"+ getCurrentScriptName() +"'->'EQ::Set_slot_item'");
+      print("EQ ERROR: Add Some Slots First! ->'"+ getCurrentScriptName() +"'->'EQ::Set_equip_item'");
       return;
     }
     u8 number_of_slots;
     _this.get("EQ Number Of Slots", number_of_slots );
-    if( _index >= number_of_slots ) {
-      print("EQ ERROR: '_index >= _number_of_slots'! ->'"+ getCurrentScriptName() +"'->'EQ::Set_slot_item'");
+     if(( _index < 0 )||( _item.m_equip_slot >= number_of_slots )) {
+       print("EQ ERROR: '_index' Out Of Bounds! ->'"+ getCurrentScriptName() +"'->'EQ::Set_equip_item'");
       return;
     }
+    // Put The Item Into The Equip-Items-Array:
+     _item.m_equip_slot = _index;
     _this.setAt("EQ Equip-Items-Array", _index, @_item );
+    if( @_item.m_func != null ) {
+      // Calling 'on_equip':
+      if( @_item.m_func.m_on_equip_fptr != null )
+	_item.m_func.m_on_equip_fptr( _this );
+      // Calling 'on_equip_anim':
+      if( @_item.m_func.m_on_equip_anim_fptr != null ) {
+	CSprite@ sprite = _this.getSprite();
+	if( @sprite == null ) {
+	  print("EQ ERROR: Getting 'sprite' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Set_equip_item'");
+	  return;
+	}
+	_item.m_func.m_on_equip_anim_fptr( sprite, _this );
+      }
+    }
   }
 
 
   
-  bool Remove_equip_item( CBlob@ _this, EQ::Item_data@ _item ) {
+  void Remove_equip_item( CBlob@ _this, EQ::Item_data@ _item ) {
+    if(( @_this == null )||( @_item == null ))
+      return;
     if( ! _this.exists("EQ Equip-Items-Array")) {
-      print("EQ ERROR: Add Some Slots First! ->'"+ getCurrentScriptName() +"'->'EQ::Remove_slot_item'");
-      return false;
+      print("EQ ERROR: Add Some Slots First! ->'"+ getCurrentScriptName() +"'->'EQ::Remove_equip_item'");
+      return;
     }
     array< EQ::Item_data@ >@ equip_items_array;
     _this.get("EQ Equip-Items-Array", @equip_items_array );
-    if( @equip_items_array == null )
-      return false;
-    bool removed = false;
-    for( u8 i = 0 ; i < equip_items_array.length() ; ++i ) {
-      if( @equip_items_array[i] == null )
-	continue;
-      if( @equip_items_array[i] == @_item ) {
-	@equip_items_array[i] = null;
-	removed = true;
+    if( @equip_items_array == null ) {
+      print("EQ ERROR: Getting 'equip_items_array' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Remove_equip_item'");
+      return;
+    }
+    u8 number_of_slots;
+    _this.get("EQ Number Of Slots", number_of_slots );
+    if(( _item.m_equip_slot < 0 )||( _item.m_equip_slot >= number_of_slots )) {
+      print("EQ ERROR: Item's 'equip_slot' Out Of Bounds! ->'"+ getCurrentScriptName() +"'->'EQ::Remove_equip_item'");
+      return;
+    }
+    if( @equip_items_array[ _item.m_equip_slot ] != @_item ) {
+      print("EQ ERROR: Item's 'equip_slot' Mismatching 'equip_items_array's Position! ->'"+ getCurrentScriptName() +"'->'EQ::Remove_equip_item'");
+      return;
+    }
+    if( @_item.m_func != null ) {
+      // Calling 'on_unequip':
+      if( @_item.m_func.m_on_unequip_fptr != null )
+	_item.m_func.m_on_unequip_fptr( _this );
+      // Calling 'on_unequip_anim':
+      if( @_item.m_func.m_on_unequip_anim_fptr != null ) {
+	CSprite@ sprite = _this.getSprite();
+	if( @sprite == null ) {
+	  print("EQ ERROR: Getting 'sprite' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Remove_equip_item'");
+	  return;
+	}
+	_item.m_func.m_on_unequip_anim_fptr( sprite, _this );
       }
-    }//for
-    return removed;
+    }
+    // Remove The Item From The Equip-Items-Array:
+    @equip_items_array[ _item.m_equip_slot ] = null;
+    _item.m_equip_slot = -1;
   }
 }//EQ
 
@@ -278,38 +317,10 @@ namespace EQ {
 	  continue;
 	// A Matching Slot Was Found.
 	// If The Item Was Already Equipt In A Other Slot, Remove It:
-	if( start >= 0 ) {
-	  // Calling 'on_unequip':
-	  if( @_item.m_func.m_on_unequip_fptr != null )
-	    _item.m_func.m_on_unequip_fptr( _this );
-	  // Calling 'on_unequip_anim':
-	  if( @_item.m_func.m_on_unequip_anim_fptr != null ) {
-	    CSprite@ sprite = _this.getSprite();
-	    if( @sprite == null ) {
-	      print("EQ ERROR: Getting 'sprite' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Equip_item'");
-	      return;
-	    }
-	    _item.m_func.m_on_unequip_anim_fptr( sprite, _this );
-	  }
-	  @equip_items[ start ] = null;
-	}
+	if( start >= 0 )
+	  EQ::Remove_equip_item( _this, _item );
 	// Equipt The Item:
-	_item.m_equip_slot = search;
-	EQ::Set_equip_item( _this, search, _item );	
-	if( @_item.m_func != null ) {
-	  // Calling 'on_equip':
-	  if( @_item.m_func.m_on_equip_fptr != null )
-	    _item.m_func.m_on_equip_fptr( _this );
-	  // Calling 'on_equip_anim':
-	  if( @_item.m_func.m_on_equip_anim_fptr != null ) {
-	    CSprite@ sprite = _this.getSprite();
-	    if( @sprite == null ) {
-	      print("EQ ERROR: Getting 'sprite' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Equip_item'");
-	      return;
-	    }
-	    _item.m_func.m_on_equip_anim_fptr( sprite, _this );
-	  }
-	}
+	EQ::Set_equip_item( _this, search, _item );
 	// Congrats! The Item Is Equipt!
 	print("EQ::Equip_item -> Congrats! The Item Is Equipt!" );//
 	return;
@@ -320,28 +331,9 @@ namespace EQ {
 
   
   void Unequip_item( CBlob@ _this, EQ::Item_data@ _item ) { // Server & Local:
-    if( @_item == null )
-      return;
     print("EQ::Unequip_item -> '"+ EQ::g_name_str[ _item.m_item.Get_name() ] );//
     // Remove Equip Item From Slot:
-    if( ! EQ::Remove_equip_item( _this, _item ))
-      return;
-    // Unequipping The Item:
-    _item.m_equip_slot = -1;
-    if( @_item.m_func != null ) {
-      // Calling 'on_unequip':
-      if( @_item.m_func.m_on_unequip_fptr != null )
-	_item.m_func.m_on_unequip_fptr( _this );
-      // Calling 'on_unequip_anim':
-      if( @_item.m_func.m_on_unequip_anim_fptr != null ) {
-	CSprite@ sprite = _this.getSprite();
-	if( @sprite == null ) {
-	  print("EQ ERROR: Getting 'sprite' Faild! ->'"+ getCurrentScriptName() +"'->'EQ::Unequip_item'");
-	  return;
-	}
-	_item.m_func.m_on_unequip_anim_fptr( sprite, _this );
-      }
-    }
+    EQ::Remove_equip_item( _this, _item );
   }
 }//EQ
 

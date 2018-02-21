@@ -65,17 +65,29 @@ EQ::Item_functionality@ Make_items_functionality_knight() {
   print("              'onTick_knight'");
   @funcy.m_on_tick_fptr = @onTick_knight;
 #endif
+
+
+
+#ifdef ON_DEFEND_KNIGHT
+  print("              'OnDefend_knight'");
+  @funcy.m_on_defend_fptr = @onDefend_knight;
+#endif
+
+#ifdef ON_ATTACK_KNIGHT
+  print("              'OnAttack_knight'");
+  @funcy.m_on_attack_fptr = @onAttack_knight;
+#endif
+
+  
+
     
+  
+  
 #ifdef ON_HIT_BLOB_KNIGHT
   print("              'onHitBlob_knight'");
   @funcy.m_on_hit_blob_fptr = @onHitBlob_knight;
 #endif
-    
-#ifdef ON_HIT_KNIGHT
-  print("              'onHit_knight'");
-  @funcy.m_on_hit_fptr = @onHit_knight;
-#endif
-    
+
 #ifdef ON_HEALTH_CHANGE_KNIGHT
   print("              'onHealthChange_knight'");
   @funcy.m_on_health_change_fptr = @onHealthChange_knight;
@@ -152,17 +164,29 @@ EQ::Item_functionality@ Make_items_functionality_archer() {
   print("              'onTick_archer'");
   @funcy.m_on_tick_fptr = @onTick_archer;
 #endif
-    
+
+
+
+  
+#ifdef ON_DEFEND_ARCHER
+  print("              'OnDefend_archer'");
+  @funcy.m_on_defend_fptr = @onDefend_archer;
+#endif
+
+#ifdef ON_ATTACK_ARCHER
+  print("              'OnAttack_archer'");
+  @funcy.m_on_attack_fptr = @onAttack_archer;
+#endif
+
+
+  
+
+  
 #ifdef ON_HIT_BLOB_ARCHER
   print("              'onHitBlob_archer'");
   @funcy.m_on_hit_blob_fptr = @onHitBlob_archer;
 #endif
-    
-#ifdef ON_HIT_ARCHER
-  print("              'onHit_archer'");
-  @funcy.m_on_hit_fptr = @onHit_archer;
-#endif
-    
+
 #ifdef ON_HEALTH_CHANGE_ARCHER
   print("              'onHealthChange_archer'");
   @funcy.m_on_health_change_fptr = @onHealthChange_archer;
@@ -239,17 +263,29 @@ EQ::Item_functionality@ Make_items_functionality_builder() {
   print("              'onTick_builder'");
   @funcy.m_on_tick_fptr = @onTick_builder;
 #endif
-    
+
+
+
+
+#ifdef ON_DEFEND_BUILDER
+  print("              'OnDefend_builder'");
+  @funcy.m_on_defend_fptr = @onDefend_builder;
+#endif
+
+#ifdef ON_ATTACK_BUILDER
+  print("              'OnAttack_builder'");
+  @funcy.m_on_attack_fptr = @onAttack_builder;
+#endif
+
+
+  
+
+  
 #ifdef ON_HIT_BLOB_BUILDER
   print("              'onHitBlob_builder'");
   @funcy.m_on_hit_blob_fptr = @onHitBlob_builder;
 #endif
-    
-#ifdef ON_HIT_BUILDER
-  print("              'onHit_builder'");
-  @funcy.m_on_hit_fptr = @onHit_builder;
-#endif
-    
+
 #ifdef ON_HEALTH_CHANGE_BUILDER
   print("              'onHealthChange_builder'");
   @funcy.m_on_health_change_fptr = @onHealthChange_builder;

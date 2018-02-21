@@ -9,6 +9,8 @@
 #include "EQ_Storage_menu.as"
 #include "EQ_Scrollbar_menu.as"
 
+#include "EQ_Rules_common.as"//<----------TEMP!
+
 
 
 const Vec2f g_frame_size( 24, 24 );
@@ -96,6 +98,8 @@ void onInit( CBlob@ _this ) { // Server & Local:
 
 
 void onTick( CBlob@ _this ) { // Server & Local:
+  if(( @_this == null )|| _this.hasTag("dead"))
+    return;
   CControls@ controls = _this.getControls();
   if( @controls == null ) {
     print("EQ ERROR: Getting 'controls' Faild! ->'"+ getCurrentScriptName() +"'->'onTick'");
@@ -119,7 +123,7 @@ void onTick( CBlob@ _this ) { // Server & Local:
 
 
 void onCollision( CBlob@ _this, CBlob@ _blob, bool _solid ) { // Server & Local:
-  if(( @_this == null )||( @_blob == null ))
+  if(( @_this == null )||( @_blob == null )|| _this.hasTag("dead"))
     return;
   // Check To See If It's EQ-Item:
   if( ! _blob.exists("EQ This Item"))

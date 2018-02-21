@@ -25,16 +25,29 @@ void onInit( CBlob@ _this ) { // Server & Local:
 
 
 void onSetPlayer( CBlob@ _this, CPlayer@ _player ) { // Server & Local:
-  if( @_this == null || @_player == null ) {
-    print("EQ ERROR: '_this' Or '_player' == null! ->'"+ getCurrentScriptName() +"'->'onSetPlayer'");
+  CRules@ rules = getRules();
+  if(( @_this == null )||( @_player == null )||( @rules == null )) {
+    print("EQ ERROR: '_this' Or '_player' Or 'rules' == null! ->'"+ getCurrentScriptName() +"'->'onSetPlayer'");
     return;
   }
+  string username = _player.getUsername();
+  if( ! rules.exists("EQ-Items Storage-Array"+ username )) {
+    // Give The Local Player His Unique 'storage_array': 
+    array< EQ::Item_data@ > storage_array;
+    rules.set("EQ-Items Storage-Array"+ username, storage_array );
+     // Give The Local Player His Unique Shop Menu Settings:
+    rules.set_bool("EQ-Shop-Setting Equip"+ username, true );
+    // Give The Local Player His Unique Filter Menu Settings:
+    rules.set_u8("EQ-Filter-Setting Material"+ username, EQ::Material::ALL );
+    rules.set_u8("EQ-Filter-Setting Slot"+ username, EQ::Slot::ALL );
+    rules.set_u8("EQ-Filter-Setting Type"+ username, EQ::Type::ALL );
+    rules.set_u8("EQ-Filter-Setting Class"+ username, EQ::Class::KNIGHT ); // <----------------
+  }
   _this.Tag("EQ Player");
-  getRules().set_u8("EQ-Inv-Filter Class"+ _player.getUsername(), EQ::Class::KNIGHT ); // <----------------
   // Inventory Menu Settings:
   _this.set_bool("EQ-Inv-Setting Drop", false );
   // Shop Menu Settings:
-  _this.set_bool("EQ-Shop-Setting Equip", _player.get_bool("EQ-Shop-Setting Equip"+ _player.getUsername()));
+  _this.set_bool("EQ-Shop-Setting Equip", rules.get_bool("EQ-Shop-Setting Equip"+ username ));
   // Adding Scripts:
   _this.AddScript("EQ_Class_inventory.as");  
 }
@@ -50,3 +63,22 @@ void onDie( CBlob@ _this ) { // Server & Local:
   // Save Shop Menu Settings:
   getRules().set_bool("EQ-Shop-Setting Equip"+ player.getUsername(), _this.get_bool("EQ-Shop-Setting Equip"));
 }
+
+
+/*
+// vvvvvvvvv TEMP vvvvvvvvvvvv
+void onTick( CBlob@ _this ) {
+  if(( ! _this.hasTag("EQ") )|| _this.hasTag("dead"))
+    return;
+  CControls@ controls = _this.getControls();
+  if( @controls == null ) {
+    print("EQ ERROR: Getting 'controls' Faild! ->'"+ getCurrentScriptName() +"'->'onTick'");
+    return;
+  }
+  if( controls.isKeyJustPressed( EKEY_CODE::KEY_KEY_P )) {
+    print("P was pressed!");
+
+  }
+}
+//^^^^^^^^^ TEMP ^^^^^^^^^^^^
+*/

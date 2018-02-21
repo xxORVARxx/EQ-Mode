@@ -54,6 +54,7 @@ namespace EQ {
 
   enum Material { WOOD, LEATHER, COPPER, BRONZE, WROUGHT_IRON, IRON, STEEL, PLATINUM, DURASTEEL, MITHRIL, IRIDIUM, PALLADIUM, OBSIDIAN, GOLD, ALL, END, NIL };
   // FIX NAME FROM 'g_materials_str' TO 'g_material_str'!!
+ // Fix name from 'g_materials_str' to 'g_material_str'!
   const array<string> g_materials_str = { "Wood",
 					  "Leather",
 					  "Copper",
